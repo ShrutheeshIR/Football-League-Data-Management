@@ -1,6 +1,8 @@
+from predictions import predAttendance
 from flask import Flask,redirect,url_for,request,render_template
 app = Flask(__name__)
 import mysql.connector
+import json
 # @app.route('/')
 # def hello_world():
 #     return 'Hello, World!'
@@ -39,6 +41,12 @@ def login():
 @app.route('/home')
 def home():
     return "username is"+str(session['username'])+"password is"+str(session['password'])
+
+
+@app.route('/slc')
+def line():
+    graphJSON=predAttendance.predatt()
+    return render_template('chart.html',  graphJSON=graphJSON)
 
 # @app.route('/')
 # def start():
