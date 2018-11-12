@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-def graphatt():
+def graphatt(tid):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -20,7 +20,7 @@ def graphatt():
 
     mycursor = mydb.cursor()
 
-    mycursor.execute("select matches.season, avg(matches.Attendance) from matches,teams where matches.HT=teams.TID and teams.shortname='Chelsea' group by matches.season;")
+    mycursor.execute("select matches.season, avg(matches.Attendance) from matches,teams where matches.HT=teams.TID and teams.tid="+str(tid)+" group by matches.season;")
 
     myresult = mycursor.fetchall()
     # print(myresult)

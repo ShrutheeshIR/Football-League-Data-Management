@@ -1,36 +1,60 @@
+import plotly
 import mysql.connector
 import plotly.plotly as py
 import plotly.graph_objs as go
 from plotly.tools import FigureFactory as FF
-import plotly
 import json
 import numpy as np
 import pandas as pd
 import scipy
 
-
-
-def predattweek(tid):
+def points(tid):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     passwd="battlefield4",
     database="footballmanagement"
-    )    
+    )
+
     mycursor = mydb.cursor()
 
-    mycursor.execute("select matches.mid, matches.Attendance from matches,teams where matches.season='2017/18' and matches.HT=teams.TID and teams.tid="+str(tid)+";")
+    mycursor.execute("select mid,hg,ag,ht,matches.at from matches where matches.at="+str(tid)+" and season='2017/18' union select mid,hg,ag,ht,matches.at from matches where matches.ht=12 and season='2017/18' order by mid desc;")
 
     myresult = mycursor.fetchall()
     # print(myresult)
     x1 = list()
     ctr=0
     for x in myresult:
-        x1.append((ctr,x[1]))
-        ctr=ctr+1
+        homegoal=x[1]
+        awaygoal=x[2]
+        hometeam=x[3]
+        awayteam=x[4]
+        if homegoal==awaygoal:
+            x1.append((ctr,1))
+            ctr=ctr+1
+            continue
 
-    # print(x1) 
+        if(tid==hometeam):
+            if homegoal>awaygoal:
+                x1.append((ctr,3))
+                ctr=ctr+1
+            else:
+                x1.append((ctr,0))
+                ctr=ctr+1
+        else:
+            if homegoal>awaygoal:
+                x1.append((ctr,0))
+                ctr=ctr+1
+            else:
+                x1.append((ctr,3))
+                ctr=ctr+1
+
+        if ctr==5:
+            break
+
+    # print(x1)
     x=x1
+    x=x[::-1]
 
     points = np.array(x)
 
@@ -40,8 +64,16 @@ def predattweek(tid):
     z = np.polyfit(x, y, 3)
     f = np.poly1d(z)
 
-    x_new = np.linspace(0, 50, 50)
+    x_new = np.linspace(0, 6,10  )
     y_new = f(x_new)
+    ctr11=0
+    for iterating in y_new:
+        if iterating<0:
+            y_new[ctr11]=0
+        elif iterating>3:
+            y_new[ctr11]=3 
+        ctr11+=1
+    # print(y_new)
 
     trace1 = go.Scatter(
         x=x,
@@ -63,7 +95,7 @@ def predattweek(tid):
     annotation = go.Annotation(
         x=6,
         y=-4.5,
-        text='Expected attendance at the Bridge',
+        text='Chelsea expected points',
         showarrow=False
     )
 
@@ -78,3 +110,4 @@ def predattweek(tid):
     # py.iplot(fig, filename='interpolation-and-extrapolation')
     graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
     return graphJSON
+# points(10)

@@ -1,5 +1,6 @@
 import pymongo
 from predictions import predAttendance
+from graphs import graphPoints
 from graphs import graphGoalTeam
 from graphs import graphGoalPlayer
 from graphs import graphGoalTeamWeek
@@ -68,8 +69,8 @@ def home():
 
 @app.route('/slc')
 def line():
-    # graphJSON=predAttendance.predatt()
-    graphJSON=graphGoalPlayer.graphgoalplayer()
+    graphJSON=graphPoints.points(12)
+    # graphJSON=graphGoalPlayer.graphgoalplayer()
     return render_template('chart.html',  graphJSON=graphJSON)
 
 @app.route('/testmongo')
