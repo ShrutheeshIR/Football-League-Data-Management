@@ -60,34 +60,42 @@
 
 <div class="modal-body row" style="height: 650px;">
   <div class="col-md-6" style=" height:100%">
-    <p>yh8iy73guykw4hryk4rk</p>
+    <p style="color: white">All Time </p>
     <table class="table table-hover table-dark">
         <thead>
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
+            <th scope="col">No.</th>
+            <th scope="col">Name</th>
+            <th scope="col">Goals</th>
           </tr>
         </thead>
         <tbody>
+          {% for ind,val in alltimetable %}
           <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
+            <th scope="row">{{ind+1}}</th>
+            <td>{{val[0] + ' ' + val[1]}}</td>
+            <td>{{val[2]}}</td>
           </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p style="color: white">Season </p>
+      <table class="table table-hover table-dark">
+        <thead>
           <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
+            <th scope="col">No.</th>
+            <th scope="col">Name</th>
+            <th scope="col">Goals</th>
           </tr>
+        </thead>
+        <tbody>
+          {% for ind,val in seastable %}
           <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>{{x1}}</td>
+            <th scope="row">{{ind+1}}</th>
+            <td>{{val[0] + ' ' + val[1]}}</td>
+            <td>{{val[2]}}</td>
           </tr>
+          {% endfor %}
         </tbody>
       </table>
 

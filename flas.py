@@ -2,8 +2,10 @@ import mysql.connector
 from google_images_download import google_images_download
 response = google_images_download.googleimagesdownload()
 
-from flask import Flask, request, render_template,url_for
-
+from flask import Flask, request, render_template,url_for,redirect
+#from predictions import predAttendance
+import json
+#from predictions import predGoalPlayer
 
 
 
@@ -13,23 +15,97 @@ mydb = mysql.connector.connect(
   passwd="Fkafka",
   database="footballproject"
 )
-
+print(mydb)
+mycursor = mydb.cursor()
 
 
 
 app = Flask(__name__)
 
+session=dict()
+
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    
+    error = None
+    if request.method == 'POST':
+        
+        
+            session['username']=request.form['username']
+            session['password']=request.form['password']
+
+            mycursor = mydb.cursor()
+
+            mycursor.execute("SELECT tid,typ FROM user where usn=\'"+ session['username']+"\' and pass=\'"+session['password']+"\'")
+
+            myresult = mycursor.fetchall()
+            try:
+                session['tid'] = myresult[0][0]
+                session['type'] = myresult[0][1]
+            except:
+                print('uhyi76ygkyb')
+                error = 'Invalid Credentials. Please try again.'
+                return render_template('login.html', error=error)
+
+            return redirect(url_for('home'))
+    return render_template('login.html', error=error)
+
+
+ 
+
 @app.route("/fand2")
 def hello():
-  x = request.args.get('team')
   y = request.args.get('val')
   z = request.args.get('x1')
 
+  if(y=='ts'):
+    query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.P  order by count(goal.GID) desc;"
+    print(query)
+    mycursor.execute(query)
+    alltimetable = mycursor.fetchall()[:5]
+    alltimetable = enumerate(alltimetable)
+    query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.P  order by count(goal.GID) desc;"
+    mycursor.execute(query)
+    seastable = mycursor.fetchall()[:5]
+    seastable = enumerate(seastable)
+  if(y=='a'):
+    query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
+    print(query)
+    mycursor.execute(query)
+    alltimetable = mycursor.fetchall()[:5]
+    alltimetable = enumerate(alltimetable)
+    query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
+    mycursor.execute(query)
+    seastable = mycursor.fetchall()[:5]
+    seastable = enumerate(seastable)
+  if(y=='yc'):
+    query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
+    print(query)
+    mycursor.execute(query)
+    alltimetable = mycursor.fetchall()[:5]
+    alltimetable = enumerate(alltimetable)
+    query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
+    mycursor.execute(query)
+    seastable = mycursor.fetchall()[:5]
+    seastable = enumerate(seastable)
+  if(y=='rc'):
+    query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
+    print(query)
+    mycursor.execute(query)
+    alltimetable = mycursor.fetchall()[:5]
+    alltimetable = enumerate(alltimetable)
+    query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
+    mycursor.execute(query)
+    seastable = mycursor.fetchall()[:5]
+    seastable = enumerate(seastable)
+    
+    
 
-  return render_template("tableandgraph.html", team=x, x1=z)
+
+  return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, seastable = seastable)
 
 @app.route("/fan", methods=["GET","POST"])
-def fan():
+def home():
 
   if request.method == 'POST':
     try:
@@ -40,8 +116,7 @@ def fan():
     print(x)
 
 
-  x = request.args.get('team')
-  mycursor = mydb.cursor()
+  x = session['tid']
   #mycursor.execute("SELECT count(Goal_ID) from goal_table where Player_ID=2064 and type != 'O'")
   #myresult1 = mycursor.fetchall()
   #mycursor.execute("select player_table.First_Name,player_table.Last_Name,count(goal_table.Goal_ID) from team_table,match_table,player_table,goal_table where player_table.Player_ID=goal_table.Player_ID and match_table.Match_ID=goal_table.Match_ID and goal_table.Team_ID=team_table.Team_ID and team_table.Short_Name='Man Utd' group by goal_table.Player_ID  order by count(goal_table.Goal_ID) desc;")
