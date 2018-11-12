@@ -109,12 +109,37 @@ def home():
 
   if request.method == 'POST':
     try:
-      x = request.form['Player']
+      playername = request.form['Player']
+      print(playername)
       
     except:
-      x = request.form['Match']
-    print(x)
-
+      matchname = request.form['Match']
+    
+    player={}
+    print('h73i632yb')
+    query = "select player.pid, player.FN, player.LN, player.Coun, player.DOB, player.Pos from player where CONCAT(player.FN, ' ',player.LN) like '%" + playername + "%'"
+    print(query)
+    mycursor.execute(query)
+    playdet = mycursor.fetchall()[:5]
+    pid = playdet[0][0]
+    player['Name'] = playdet[0][1]+playdet[0][2]
+    player['Country']=playdet[0][3]
+    player['Position']=playdet[0][5]
+    player['DOB']=playdet[0][4]
+    query = "Select count(GID) from Goal where goal.P = "+str(pid)+" and goal.Type <> 'O' "
+    mycursor.execute(query)
+    player['AllTimeGoals'] = mycursor.fetchall()[0][0]
+    query = "Select count(GID) from Goal where goal.AP = "+str(pid)+" and goal.Type <> 'O' "
+    mycursor.execute(query)
+    player['AllTimeAssists'] = mycursor.fetchall()[0][0]
+    query = "Select count(GID) from Goal, matches where goal.P = "+str(pid)+" and goal.Type <> 'O' and goal.MID=matches.MID and matches.Season='2017/18'"
+    mycursor.execute(query)
+    player['SeasonGoals'] = mycursor.fetchall()[0][0]
+    query = "Select count(GID) from Goal,matches where goal.AP = "+str(pid)+" and goal.Type <> 'O' and goal.MID=matches.MID and matches.Season='2017/18'"
+    mycursor.execute(query)
+    player['SeasonAssists'] = mycursor.fetchall()[0][0]
+    
+    return render_template("player.html", player=player)
 
   x = session['tid']
   #mycursor.execute("SELECT count(Goal_ID) from goal_table where Player_ID=2064 and type != 'O'")
@@ -219,7 +244,7 @@ def home():
   
 
   print(x)
-  return render_template('index.html', x=x, allyellow = AllYellow[0][0],allred = AllRed[0][0] ,allgoals=Allgoals[0][0], allgames=AllGames[0][0], teamname=teamname, teamshortname=teamshortname, topgoalscorer=topgoalscorer, topassist=topassist, seasontopgoalscorer=seasontopgoalscorer, seasontopassist=seasontopassist, recentgame = RecMatch)
+  return render_template('index.html', x=x, allyellow = AllYellow[0][0],allred = AllRed[0][0] ,allgoals=Allgoals[0][0], allgames=AllGames[0][0], teamname=teamname, teamshortname=teamshortname, topgoalscorer=topgoalscorer, topassist=topassist, seasontopgoalscorer=seasontopgoalscorer, seasontopassist=seasontopassist, recentgame = RecMatch, type=session['type'])
 
 @app.route("/player")
 def match():
