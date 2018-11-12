@@ -4,6 +4,7 @@ from graphs import graphPoints
 from graphs import graphGoalTeam
 from graphs import graphGoalPlayer
 from graphs import graphGoalTeamWeek
+from graphs import graphRedCard
 from flask import Flask,redirect,url_for,request,render_template
 app = Flask(__name__)
 import mysql.connector
@@ -69,8 +70,8 @@ def home():
 
 @app.route('/slc')
 def line():
-    graphJSON=graphPoints.points(12)
-    # graphJSON=graphGoalPlayer.graphgoalplayer()
+    # graphJSON=graphPoints.points(12)
+    graphJSON=graphRedCard.graphredcard(12)#.graphgoalplayer()
     return render_template('chart.html',  graphJSON=graphJSON)
 
 @app.route('/testmongo')

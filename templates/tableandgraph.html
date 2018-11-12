@@ -101,7 +101,7 @@
 
 
       <div class="btn-group">
-        <a href="{{url_for('hello',team=team, val='ts', x1=0)}}" class="btn btn-primary active">
+        <a href="{{url_for('hello',team=team, val=val, x1=0)}}" class="btn btn-primary active">
             <i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Save
         </a>
     </div>
@@ -110,36 +110,15 @@
   </div>
   {% if x1=='0' %}
   <div class="col-md-5" style=" height:100%">
+      
+    <div id="chart1" class="chart1" style=" height:50%">
+    </div>
+    
+    <div id="chart2" class="chart2" style=" height:50%">
+    </div>
+
     <p>yh8iy73guykw4hryk4rk</p>
-    <table class="table table-hover table-dark">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@twitter</td>
-          </tr>
-        </tbody>
-      </table>
+    
   </div>
   {%endif%}
 </div>
@@ -148,4 +127,51 @@
 
 
 </body>
+
+<!-- D3.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<!-- Plotly.js -->
+<script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+
+{% if val !='rc' %}
+<script type="text/javascript">
+     
+    
+    var graphs = {{graphJSON | safe}};
+  
+    Plotly.plot('chart1',graphs,{}); 
+      var graphs2 = {{graphJSON1 | safe}};
+
+Plotly.plot('chart2',graphs2,{});
+</script>
+{% endif %}   
+{% if val =='rc' %}
+<script type="text/javascript">
+     
+    
+    var graphs = {{graphJSON | safe}};
+  
+    Plotly.plot('chart1',graphs,{}); 
+//       var graphs2 = {{graphJSON1 | safe}};
+
+// Plotly.plot('chart2',graphs2,{});
+  
+    
+    
+    
+          
+    
+
+</script>
+{% endif %} 
+<!-- <script type="text/javascript">
+     var graphs2 = {{graphJSON1 | safe}};
+  
+  
+  Plotly.plot('chart2',graphs2,{});
+  
+     
+
+</script> -->
 </html>

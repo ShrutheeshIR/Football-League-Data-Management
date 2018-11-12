@@ -1,9 +1,10 @@
 import mysql.connector
-from google_images_download import google_images_download
-response = google_images_download.googleimagesdownload()
+# from google_images_download import google_images_download
+# response = google_images_download.googleimagesdownload()
 
 from flask import Flask, request, render_template,url_for,redirect
-#from predictions import predAttendance
+
+from graphs import graphAttendance,graphAttendanceWeek,graphGoalPlayer,graphGoalTeam,graphGoalTeamWeek,graphPoints,graphRedCard,graphYellowCard,graphYellowCardWeek
 import json
 #from predictions import predGoalPlayer
 
@@ -12,8 +13,8 @@ import json
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Fkafka",
-  database="footballproject"
+  passwd="battlefield4",
+  database="footballmanagement"
 )
 print(mydb)
 mycursor = mydb.cursor()
@@ -68,6 +69,9 @@ def hello():
     mycursor.execute(query)
     seastable = mycursor.fetchall()[:5]
     seastable = enumerate(seastable)
+    graphJSON=graphGoalTeam.graphgoalteam(session['tid'])
+    graphJSON1=graphGoalTeamWeek.graphgoalteamweek(session['tid'])
+    
   if(y=='a'):
     query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
     print(query)
@@ -78,6 +82,8 @@ def hello():
     mycursor.execute(query)
     seastable = mycursor.fetchall()[:5]
     seastable = enumerate(seastable)
+    graphJSON=None
+    graphJSON1=None
   if(y=='yc'):
     query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
     print(query)
@@ -88,6 +94,8 @@ def hello():
     mycursor.execute(query)
     seastable = mycursor.fetchall()[:5]
     seastable = enumerate(seastable)
+    graphJSON=graphYellowCard.graphyellowcard(session['tid'])
+    graphJSON1=graphYellowCardWeek.graphyellowcardweek(session['tid'])
   if(y=='rc'):
     query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
     print(query)
@@ -98,11 +106,14 @@ def hello():
     mycursor.execute(query)
     seastable = mycursor.fetchall()[:5]
     seastable = enumerate(seastable)
+    graphJSON=graphRedCard.graphredcard(session['tid'])
+    graphJSON1=None
+    return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, seastable = seastable,graphJSON=graphJSON)
     
     
 
 
-  return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, seastable = seastable)
+  return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, seastable = seastable,graphJSON=graphJSON,graphJSON1=graphJSON1)
 
 @app.route("/fan", methods=["GET","POST"])
 def home():
