@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-def goalteamweek(tid):
+def predyellowcardweek(tid):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -18,14 +18,14 @@ def goalteamweek(tid):
 
     mycursor = mydb.cursor()
 
-    mycursor.execute("select MID,matches.AG from matches,teams where matches.season='2017/18' and matches.at=teams.TID and teams.tid="+str(tid)+" union select mid,matches.HG from matches,teams where matches.season='2017/18' and matches.ht=teams.TID and teams.ShortName='Chelsea' order by mid asc;")
+    mycursor.execute("select count(eid),matches.mid from event,matches where event.`Type`='Y' and event.tid="+str(tid)+" and event.mid=matches.mid and matches.season='2017/18' group by event.mid order by mid asc;")
 
     myresult = mycursor.fetchall()
     # print(myresult)
     x1 = list()
     ctr=0
     for x in myresult:
-        x1.append((ctr,x[1]))
+        x1.append((ctr,x[0]))
         ctr=ctr+1
 
     # print(x1)
@@ -71,9 +71,10 @@ def goalteamweek(tid):
         annotations=[annotation]
     )
 
-    data = [trace1, trace2]
+    data = [trace1,trace2]
     fig = go.Figure(data=data, layout=layout)
 
-    # py.iplot(fig, filename='interpolation-and-extrapolation')
+    # py.plot(data, filename='interpolation-and-extrapolation')
     graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+    print(data)
     return graphJSON
