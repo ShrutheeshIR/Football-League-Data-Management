@@ -1,5 +1,8 @@
 import pymongo
 from predictions import predAttendance
+from graphs import graphGoalTeam
+from graphs import graphGoalPlayer
+from graphs import graphGoalTeamWeek
 from flask import Flask,redirect,url_for,request,render_template
 app = Flask(__name__)
 import mysql.connector
@@ -45,7 +48,7 @@ def login():
 
             mycursor = mydb.cursor()
 
-            mycursor.execute("SELECT tid,type FROM user where usn=\'"+ session['username']+"\' and pass=\'"+session['password']+"\'")
+            mycursor.execute("SELECT tid,typ FROM user where usn=\'"+ session['username']+"\' and pass=\'"+session['password']+"\'")
 
             myresult = mycursor.fetchall()
             try:
@@ -65,7 +68,8 @@ def home():
 
 @app.route('/slc')
 def line():
-    graphJSON=predAttendance.predatt()
+    # graphJSON=predAttendance.predatt()
+    graphJSON=graphGoalPlayer.graphgoalplayer()
     return render_template('chart.html',  graphJSON=graphJSON)
 
 @app.route('/testmongo')
