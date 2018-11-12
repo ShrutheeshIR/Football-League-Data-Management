@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-def goalteam():
+def goalteam(tid):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -19,7 +19,7 @@ def goalteam():
 
     mycursor = mydb.cursor()
 
-    mycursor.execute("select matches.Season,count(goal.GID) from goal,matches,teams where goal.mid=matches.mid and goal.tid=teams.tid and teams.ShortName='Chelsea' group by matches.season;")
+    mycursor.execute("select matches.Season,count(goal.GID) from goal,matches,teams where goal.mid=matches.mid and goal.tid=teams.tid and teams.tid="+str(tid)+" group by matches.season;")
 
     myresult = mycursor.fetchall()
     # print(myresult)
