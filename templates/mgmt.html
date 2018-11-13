@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Football Manager</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+        <!-- custom-theme -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="keywords" content="Goal Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template, 
+        Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design" />
+        <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+                function hideURLbar(){ window.scrollTo(0,1); } </script>
+        <!-- //custom-theme -->
+        <link href="static/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="static/css/JiSlider.css" rel="stylesheet"> 
+        <!-- light-box -->
+        <link rel="stylesheet" href="static/css/lightbox.css">
+        <!-- //light-box -->
+        
+        <!-- Owl-carousel-CSS --><link href="static/css/owl.carousel.css" rel="stylesheet">
+        
+        <link href="/static/css/style.css" rel="stylesheet" type="text/css" media="all" />
+        <!-- font-awesome-icons -->
+        <link href="static/css/font-awesome.css" rel="stylesheet"> 
+        <!-- //font-awesome-icons -->
+        <link href="//fonts.googleapis.com/css?family=Raleway:400,400i,500,500i,600,600i,700,700i,800" rel="stylesheet">
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+            
+
+
+</head>
+
+
+	
+<body>
+<!-- banner -->
+
+<div class="container-fluid">
+	<div class="row" style="background-color: black; height:100px">
+		<div class="name mr-auto" style="display: inline-block; vertical-align: middle; margin-top: 25px; margin-left: 15px; color: greenyellow;">
+				<h1>	PL</h1>
+
+		</div>
+		<div class="name mx-auto" style="display: inline-block; align-content: flex-end; vertical-align: middle; color: greenyellow;">
+				<h1><img src="{{url_for('static', filename='images/download.png')}}" style="height:100px; width:100px"></h1>
+
+		</div>
+
+		<div class="name ml-auto" style="display: inline-block; vertical-align: middle; margin-top: 25px; margin-right: 15px; color: greenyellow;">
+				<h1>	Old Trafford</h1>
+
+		</div>
+		
+
+
+	</div>
+
+
+</div>
+
+<!-- banner -->
+	<div class="banner-silder" id="home">
+		<div id="JiSlider" class="jislider">
+			<ul>
+				<li>
+					<div class="w3layouts-banner-top">
+
+							<div class="container">
+								<div class="agileits-banner-info">
+									<h2><img src="{{url_for('static', filename='images/a1.jpg')}}"></h2>
+									<h3>Premier League</h3>
+									 
+									
+								</div>	
+							</div>
+						</div>
+				</li>
+
+
+			</ul>
+		</div>
+		<!-- banner-bottom -->
+	<div class="banner-bottom">
+		<div class="container">
+			<div class="banner_bottom_agile_grids">
+				<div class="wthree_banner_bottom_right_grids">
+					<div class="col-md-3 banner_bottom_right_grid">
+						<div class="view view-tenth">
+							<div class="agile_text_box">
+								<i class="fa fa-eye" aria-hidden="true"></i>
+								<h3> Top Goals</h3>
+                                <p>{{topgoalscorer['First_Name']}} {{topgoalscorer['Second_Name']}}</p>
+                                <p>{{topgoalscorer['GoalsScored']}}</p>
+							</div>
+							<div class="mask">
+								<img src="{{url_for('static', filename='images/a1.jpg')}}" class="img-responsive" alt="" />
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 banner_bottom_right_grid">
+						<div class="view view-tenth">
+							<div class="agile_text_box">
+								<i class="fa fa-building-o" aria-hidden="true"></i>
+								<h3> Top Assists</h3>
+                                <p>{{topassist['First_Name']}} {{topassist['Second_Name']}}</p>
+                                <p>{{topassist['GoalsAssisted']}}</p>
+							</div>
+							<div class="mask">
+								<img src="{{url_for('static', filename='images/a1.jpg')}}" class="img-responsive" alt="" />
+							</div>
+						</div>
+					</div>
+				
+					<div class="col-md-3 banner_bottom_right_grid">
+						<div class="view view-tenth">
+							<div class="agile_text_box">
+								<i class="fa fa-eraser" aria-hidden="true"></i>
+								<h3>Season Top Goals</h3>
+                                <p>{{seasontopgoalscorer['First_Name']}} {{seasontopgoalscorer['Second_Name']}}</p>
+                                <p>{{seasontopgoalscorer['GoalsScored']}}</p>
+							</div>
+							<div class="mask">
+								<img src="{{url_for('static', filename='images/a1.jpg')}}" class="img-responsive" alt="" />
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 banner_bottom_right_grid">
+						<div class="view view-tenth">
+							<div class="agile_text_box">
+								<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+								<h3>Season Top Assists</h3>
+                                <p>{{seasontopassist['First_Name']}} {{seasontopassist['Second_Name']}}</p>
+                                <p>{{seasontopassist['GoalsAssisted']}}</p>
+							</div>
+							<div class="mask">
+								<img src="{{url_for('static', filename='images/a1.jpg')}}" class="img-responsive" alt="" />
+							</div>
+						</div>
+					</div>
+					<div class="clearfix"> </div>
+			</div>
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+</div>
+<!-- banner-bottom -->
+
+      </div>
+
+<!-- //banner -->
+	<!-- about -->
+<div class="w3-agileits-about" id="about">
+		<div class="container">
+				<div class="w3-agileits-about-top">
+						<h3>Recent Games</h3>
+					<div class="clearfix"></div>
+				</div>
+				<div class="col-md-4 col-sm-4 w3-agileits-about-grid">
+					<i class="fa fa-flag" aria-hidden="true" style="color:green"></i>
+					<h4 style="color: green">{{recentgame[0]['HG']}} - {{recentgame[0]['AG']}}</h4>
+					<p>{{recentgame[0]['tn']}}-{{recentgame[0]['an']}}</p>
+				</div>
+				<div class="col-md-4 col-sm-4 w3-agileits-about-grid">
+			
+					<i class="fa fa-font-awesome" aria-hidden="true" style="color:green"></i>
+					<h4 style="color: green">{{recentgame[1]['HG']}} - {{recentgame[1]['AG']}}</h4>
+					<p>{{recentgame[1]['tn']}}- {{recentgame[1]['an']}}</p>
+				</div>
+				<div class="col-md-4 col-sm-4 w3-agileits-about-grid">
+					<i class="fa fa-font-awesome" aria-hidden="true" style="color:green"></i>
+					<h4 style="color: green">{{recentgame[2]['HG']}} - {{recentgame[2]['AG']}}</h4>
+					<p>{{recentgame[2]['tn']}} - {{recentgame[2]['an']}}</p>
+				</div>
+				
+				
+				<div class="clearfix"></div>
+			</div>
+	   </div>
+<!-- //about -->
+<!-- stats -->
+
+
+       <div class="container-fluid">
+           <div class="row">
+            <div class="dropdown" style="width: 40%">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="color: white;background-color: black">
+                      Search
+                    </button>
+                    <div class="dropdown-menu dark">
+														<a class="dropdown-item" href="{{url_for('hello',val='ts', x1=1)}}">Top Scorer</a>
+														<a class="dropdown-item" href="{{url_for('hello',val='a',  x1=1)}}">Assist</a>
+														<a class="dropdown-item" href="{{url_for('hello',val='rc', x1=1)}}">Red Card</a>
+														<a class="dropdown-item" href="{{url_for('hello',val='yc', x1=1)}}">Yellow Card</a>
+														{% if type == 'M' %}
+														<a class="dropdown-item" href="{{url_for('hello',val='m',  x1=1)}}">Matches</a>
+														{% endif %}
+                    </div>
+                  </div>
+
+                  
+                  <form id="form_search" name="player_search" method="post" action="" class="form-inline" style="width: 40%">
+                        <div class="form-group">
+                          <div class="input-group">
+                           <input class="form-control" placeholder="Enter Player" type="text" name="Player">
+                           <span class="input-group-btn">
+                              <button class="btn btn-default" type="button">Go!</button>
+                           </span>
+                         </div>
+                       </div>
+                     </form>
+
+
+                     <form id="form_search" name="match_search" method="post" action="" class="form-inline">
+                            <div class="form-group">
+                              <div class="input-group">
+                               <input class="form-control" placeholder="Enter Match" type="text" name="Match">
+                               <span class="input-group-btn">
+                                  <button class="btn btn-default" type="button">Go!</button>
+                               </span>
+                             </div>
+                           </div>
+                         </form>                     
+                </div>
+       </div>
+	<div class="stats" id="stats">
+	    <div class="container"> 
+			<div class="inner_w3l_agile_grids">
+		<div class="col-md-3 w3layouts_stats_left w3_counter_grid">
+		   <i class="fa fa-futbol-o" aria-hidden="true"></i>
+			<p class="counter">{{allgoals}}</p>
+			<h3>Total Goals Scored</h3>
+		</div>
+		<div class="col-md-3 w3layouts_stats_left w3_counter_grid1">
+		    <i class="fa fa-soccer-ball-o" aria-hidden="true"></i>
+			<p class="counter">{{allgames}}</p>
+			<h3>Total Games</h3>
+		</div>
+		<div class="col-md-3 w3layouts_stats_left w3_counter_grid2">
+		<i class="fa fa-credit-card-alt" aria-hidden="true"></i>
+			<p class="counter">{{allyellow}}</p>
+			<h3>Total Yellow Cards</h3>
+		</div>
+		<div class="col-md-3 w3layouts_stats_left w3_counter_grid3">
+		<i class="fa fa-credit-card-alt" aria-hidden="true"></i>
+			<p class="counter">{{allred}}</p>
+			<h3>Total Red Cards</h3>
+		</div>
+		<div class="clearfix"> </div>
+	</div>
+   </div>	
+</div>
+<!-- //stats -->
+
+
+
+
+<!-- /live match -->
+
+
+<!-- //live match -->
+
+
+<!-- map -->
+<!-- <div class="map">
+	<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d158858.47339870626!2d-0.2417004386729234!3d51.52855824202755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8a00baf21de75%3A0x52963a5addd52a99!2sLondon%2C+UK!5e0!3m2!1sen!2sin!4v1497263047247"></iframe>
+</div> -->
+<!-- map -->
+
+
+<!-- /contact bottom -->
+
+<!-- start-smoth-scrolling -->
+<!-- js -->
+<script type="text/javascript" src="static/js/jquery-2.1.4.min.js"></script>
+<!-- //js -->
+<script src="static/js/JiSlider.js"></script>
+<script>
+			$(window).load(function () {
+				$('#JiSlider').JiSlider({color: '#fff', start: 1, reverse: false}).addClass('ff')
+			})
+		</script>
+
+<!-- //footer -->
+<!-- stats -->
+	<script src="static/js/jquery.waypoints.min.js"></script>
+	<script src="static/js/jquery.countup.js"></script>
+		<script>
+			$('.counter').countUp();
+		</script>
+<!-- //stats -->
+ <!-- Custom-JavaScript-File-Links -->
+        <script type="text/javascript" src="static/js/moment.js"></script>
+        <script type="text/javascript" src="static/js/moment-timezone-with-data.js"></script>
+        <script type="text/javascript" src="static/js/timer.js"></script>
+    <!-- //Custom-JavaScript-File-Links -->
+
+<!-- requried-jsfiles-for owl -->
+ <script src="static/js/owl.carousel.js"></script>
+							        <script>
+									    $(document).ready(function() {
+									      $("#owl-demo2").owlCarousel({
+									        items : 1,
+									        lazyLoad : false,
+									        autoPlay : true,
+									        navigation : false,
+									        navigationText :  false,
+									        pagination : true,
+									      });
+									    });
+									  </script>
+							 <!-- //requried-jsfiles-for owl -->
+ <script src="static/js/index.js"></script>
+  <script src="static/js/scrolling-nav.js"></script>  
+
+<script type="text/javascript" src="static/js/move-top.js"></script>
+<script type="text/javascript" src="static/js/easing.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function($) {
+		$(".scroll").click(function(event){		
+			event.preventDefault();
+			$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+		});
+	});
+</script>
+<!-- start-smoth-scrolling -->
+<!-- for bootstrap working -->
+	<script src="static/js/bootstrap.js"></script>
+<!-- //for bootstrap working -->
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear' 
+				};
+			*/
+								
+			$().UItoTop({ easingType: 'easeOutQuart' });
+								
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+</body>
+</html>

@@ -4,7 +4,7 @@ import mysql.connector
 
 from flask import Flask, request, render_template,url_for,redirect
 
-from graphs import graphAttendance,graphAttendanceWeek,graphGoalPlayer,graphGoalTeam,graphGoalTeamWeek,graphPoints,graphRedCard,graphYellowCard,graphYellowCardWeek
+#from graphs import graphAttendance,graphAttendanceWeek,graphGoalPlayer,graphGoalTeam,graphGoalTeamWeek,graphPoints,graphRedCard,graphYellowCard,graphYellowCardWeek
 import json
 #from predictions import predGoalPlayer
 
@@ -13,8 +13,8 @@ import json
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="battlefield4",
-  database="footballmanagement"
+  passwd="Fkafka",
+  database="footballproject"
 )
 print(mydb)
 mycursor = mydb.cursor()
@@ -152,65 +152,154 @@ def home():
     
     return render_template("player.html", player=player)
 
-  x = session['tid']
-  #mycursor.execute("SELECT count(Goal_ID) from goal_table where Player_ID=2064 and type != 'O'")
-  #myresult1 = mycursor.fetchall()
-  #mycursor.execute("select player_table.First_Name,player_table.Last_Name,count(goal_table.Goal_ID) from team_table,match_table,player_table,goal_table where player_table.Player_ID=goal_table.Player_ID and match_table.Match_ID=goal_table.Match_ID and goal_table.Team_ID=team_table.Team_ID and team_table.Short_Name='Man Utd' group by goal_table.Player_ID  order by count(goal_table.Goal_ID) desc;")
-  #myresult1 = mycursor.fetchall()
+  if session['type'] != 'm':
+    x = session['tid']
+    #mycursor.execute("SELECT count(Goal_ID) from goal_table where Player_ID=2064 and type != 'O'")
+    #myresult1 = mycursor.fetchall()
+    #mycursor.execute("select player_table.First_Name,player_table.Last_Name,count(goal_table.Goal_ID) from team_table,match_table,player_table,goal_table where player_table.Player_ID=goal_table.Player_ID and match_table.Match_ID=goal_table.Match_ID and goal_table.Team_ID=team_table.Team_ID and team_table.Short_Name='Man Utd' group by goal_table.Player_ID  order by count(goal_table.Goal_ID) desc;")
+    #myresult1 = mycursor.fetchall()
 
-  somestring = "SELECT DISTINCT Team_Name, ShortName from teams where TID=" + str(x)
-  mycursor.execute(somestring)
+    somestring = "SELECT DISTINCT Team_Name, ShortName from teams where TID=" + str(x)
+    mycursor.execute(somestring)
 
-  teamdet=mycursor.fetchall()
-  teamname = teamdet[0][0]
-  teamshortname = teamdet[0][1]
-  #arguments = {"keywords":"Wayne Rooney","single_image":True, "limit":1}   #creating list of arguments
-  #absolute_image_paths = response.download(arguments)
-  #print(absolute_image_paths)
-  query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID="+ str(x) + " group by goal.P  order by count(goal.GID) desc;"
-  mycursor.execute(query)
-  topscor = mycursor.fetchall()
-  query="select distinct player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(x) + " group by goal.P  order by count(goal.GID) desc;"
-  print(query)
-  mycursor.execute(query)
-  seastopscor = mycursor.fetchall()
-  query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(x) + " group by goal.AP  order by count(goal.GID) desc;"
-  mycursor.execute(query)
-  topassist = mycursor.fetchall()
-  query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(x) + " group by goal.AP  order by count(goal.GID) desc;"
-  mycursor.execute(query)
-  seastopassist = mycursor.fetchall()
-  query="select count(*) from goal where goal.TID="+str(x)+" and goal.Type!='O'"
-  mycursor.execute(query)
-  Allgoals = mycursor.fetchall()
-  print(Allgoals)  
-  query="select count(*) from matches where matches.HT="+str(x)+" or matches.AT="+str(x)
-  mycursor.execute(query)
-  AllGames = mycursor.fetchall()
-  query="select count(*) from event where event.Type='Y' and event.TID="+str(x)
-  mycursor.execute(query)
-  AllYellow = mycursor.fetchall()
-  query="select count(*) from event where event.Type='R' and event.TID="+str(x)
-  mycursor.execute(query)
-  AllRed = mycursor.fetchall()
-  query="select HT, AT, HG, AG from matches,teams where (matches.HT=teams.TID or matches.AT=teams.TID) and teams.TID="+str(x) + " order by matches.Date desc,matches.Time desc limit 3;"
-  mycursor.execute(query)
-  RecentMatches = mycursor.fetchall()
-  RecMatch = []
-  for i in RecentMatches:
+    teamdet=mycursor.fetchall()
+    teamname = teamdet[0][0]
+    teamshortname = teamdet[0][1]
+    #arguments = {"keywords":"Wayne Rooney","single_image":True, "limit":1}   #creating list of arguments
+    #absolute_image_paths = response.download(arguments)
+    #print(absolute_image_paths)
+    query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID="+ str(x) + " group by goal.P  order by count(goal.GID) desc;"
+    mycursor.execute(query)
+    topscor = mycursor.fetchall()
+    query="select distinct player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(x) + " group by goal.P  order by count(goal.GID) desc;"
+    print(query)
+    mycursor.execute(query)
+    seastopscor = mycursor.fetchall()
+    query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(x) + " group by goal.AP  order by count(goal.GID) desc;"
+    mycursor.execute(query)
+    topassist = mycursor.fetchall()
+    query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(x) + " group by goal.AP  order by count(goal.GID) desc;"
+    mycursor.execute(query)
+    seastopassist = mycursor.fetchall()
+    query="select count(*) from goal where goal.TID="+str(x)+" and goal.Type!='O'"
+    mycursor.execute(query)
+    Allgoals = mycursor.fetchall()
+    print(Allgoals)  
+    query="select count(*) from matches where matches.HT="+str(x)+" or matches.AT="+str(x)
+    mycursor.execute(query)
+    AllGames = mycursor.fetchall()
+    query="select count(*) from event where event.Type='Y' and event.TID="+str(x)
+    mycursor.execute(query)
+    AllYellow = mycursor.fetchall()
+    query="select count(*) from event where event.Type='R' and event.TID="+str(x)
+    mycursor.execute(query)
+    AllRed = mycursor.fetchall()
+    query="select HT, AT, HG, AG from matches,teams where (matches.HT=teams.TID or matches.AT=teams.TID) and teams.TID="+str(x) + " order by matches.Date desc,matches.Time desc limit 3;"
+    mycursor.execute(query)
+    RecentMatches = mycursor.fetchall()
+    RecMatch = []
+    for i in RecentMatches:
 
-    print('*******')
-    print(i)
-    dic = {}
-    dic['HG'] = i[2]
-    dic['AG'] = i[3]
-    if str(i[0]) == str(x):
+      print('*******')
+      print(i)
+      dic = {}
+      dic['HG'] = i[2]
+      dic['AG'] = i[3]
+      if str(i[0]) == str(x):
 
+        query="select Team_Name from teams where TID="+str(i[1])
+        mycursor.execute(query)
+        tn = mycursor.fetchall()
+
+        dic['tn']=tn[0][0]
+        if dic['HG']-dic['AG'] > 0:
+          dic['color'] = 'green'
+        elif dic['HG']-dic['AG'] < 0:
+          dic['color'] = 'red'
+
+        else:
+          dic['color'] = 'gray'
+
+      if str(i[1]) == str(x):
+
+        query="select Team_Name from teams where TID="+str(i[0])
+        mycursor.execute(query)
+        tn = mycursor.fetchall()
+        dic['tn']=tn[0][0]
+
+
+        if dic['AG']-dic['HG'] > 0:
+          dic['color'] = 'green'
+        elif dic['AG']-dic['HG'] < 0:
+          dic['color'] = 'red'
+        else:
+          dic['color'] = 'gray'
+      RecMatch.append(dic)
+
+    topgoalscorer = {'First_Name':topscor[0][0], 'Second_Name' : topscor[0][1], 'GoalsScored':topscor[0][2]}
+    topassist = {'First_Name':topassist[0][0], 'Second_Name' : topassist[0][1], 'GoalsAssisted':topassist[0][2]}
+    seasontopgoalscorer = {'First_Name':seastopscor[0][0], 'Second_Name' : seastopscor[0][1], 'GoalsScored':seastopscor[0][2]}
+    seasontopassist = {'First_Name':seastopassist[0][0], 'Second_Name' : seastopassist[0][1], 'GoalsAssisted':seastopassist[0][2]}
+    
+
+    print(x)
+    return render_template('index.html', x=x, allyellow = AllYellow[0][0],allred = AllRed[0][0] ,allgoals=Allgoals[0][0], allgames=AllGames[0][0], teamname=teamname, teamshortname=teamshortname, topgoalscorer=topgoalscorer, topassist=topassist, seasontopgoalscorer=seasontopgoalscorer, seasontopassist=seasontopassist, recentgame = RecMatch, type=session['type'])
+
+
+  else:
+    #mycursor.execute("SELECT count(Goal_ID) from goal_table where Player_ID=2064 and type != 'O'")
+    #myresult1 = mycursor.fetchall()
+    #mycursor.execute("select player_table.First_Name,player_table.Last_Name,count(goal_table.Goal_ID) from team_table,match_table,player_table,goal_table where player_table.Player_ID=goal_table.Player_ID and match_table.Match_ID=goal_table.Match_ID and goal_table.Team_ID=team_table.Team_ID and team_table.Short_Name='Man Utd' group by goal_table.Player_ID  order by count(goal_table.Goal_ID) desc;")
+    #myresult1 = mycursor.fetchall()
+
+    query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID  group by goal.P  order by count(goal.GID) desc;"
+    mycursor.execute(query)
+    topscor = mycursor.fetchall()
+    query="select distinct player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID group by goal.P  order by count(goal.GID) desc;"
+    print(query)
+    mycursor.execute(query)
+    seastopscor = mycursor.fetchall()
+    query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID group by goal.AP  order by count(goal.GID) desc;"
+    mycursor.execute(query)
+    topassist = mycursor.fetchall()
+    query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID group by goal.AP  order by count(goal.GID) desc;"
+    mycursor.execute(query)
+    seastopassist = mycursor.fetchall()
+    query="select count(*) from goal where goal.Type!='O'"
+    mycursor.execute(query)
+    Allgoals = mycursor.fetchall()
+    print(Allgoals)  
+    query="select count(*) from matches"
+    mycursor.execute(query)
+    AllGames = mycursor.fetchall()
+    query="select count(*) from event where event.Type='Y'"
+    mycursor.execute(query)
+    AllYellow = mycursor.fetchall()
+    query="select count(*) from event where event.Type='R'"
+    mycursor.execute(query)
+    AllRed = mycursor.fetchall()
+    query="select HT, AT, HG, AG from matches,teams where (matches.HT=teams.TID or matches.AT=teams.TID) order by matches.Date desc,matches.Time desc limit 6;"
+    mycursor.execute(query)
+    RecentMatches = mycursor.fetchall()
+    RecMatch = []
+    for xa,i in enumerate(RecentMatches):
+      if xa%2==0:
+        continue
+      print('*******')
+      print(i)
+      dic = {}
+      dic['HG'] = i[2]
+      dic['AG'] = i[3]
+
+      query="select Team_Name from teams where TID="+str(i[0])
+      mycursor.execute(query)
+      tn = mycursor.fetchall()
+      dic['tn']=tn[0][0]
       query="select Team_Name from teams where TID="+str(i[1])
       mycursor.execute(query)
       tn = mycursor.fetchall()
-
-      dic['tn']=tn[0][0]
+      dic['an']=tn[0][0]
+      
       if dic['HG']-dic['AG'] > 0:
         dic['color'] = 'green'
       elif dic['HG']-dic['AG'] < 0:
@@ -219,25 +308,9 @@ def home():
       else:
         dic['color'] = 'gray'
 
-    if str(i[1]) == str(x):
-
-      query="select Team_Name from teams where TID="+str(i[0])
-      mycursor.execute(query)
-      tn = mycursor.fetchall()
-      dic['tn']=tn[0][0]
+      RecMatch.append(dic)
 
 
-      if dic['AG']-dic['HG'] > 0:
-        dic['color'] = 'green'
-      elif dic['AG']-dic['HG'] < 0:
-        dic['color'] = 'red'
-      else:
-        dic['color'] = 'gray'
-    RecMatch.append(dic)
-
-
-
-  print(RecMatch)  
   #query="select HG, AG from event where event.Type='R' and event.TID="+str(x)
   #mycursor.execute(query)
   #AllRed = mycursor.fetchall()
@@ -248,14 +321,12 @@ def home():
   
   
   
-  topgoalscorer = {'First_Name':topscor[0][0], 'Second_Name' : topscor[0][1], 'GoalsScored':topscor[0][2]}
-  topassist = {'First_Name':topassist[0][0], 'Second_Name' : topassist[0][1], 'GoalsAssisted':topassist[0][2]}
-  seasontopgoalscorer = {'First_Name':seastopscor[0][0], 'Second_Name' : seastopscor[0][1], 'GoalsScored':seastopscor[0][2]}
-  seasontopassist = {'First_Name':seastopassist[0][0], 'Second_Name' : seastopassist[0][1], 'GoalsAssisted':seastopassist[0][2]}
-  
-
-  print(x)
-  return render_template('index.html', x=x, allyellow = AllYellow[0][0],allred = AllRed[0][0] ,allgoals=Allgoals[0][0], allgames=AllGames[0][0], teamname=teamname, teamshortname=teamshortname, topgoalscorer=topgoalscorer, topassist=topassist, seasontopgoalscorer=seasontopgoalscorer, seasontopassist=seasontopassist, recentgame = RecMatch, type=session['type'])
+    topgoalscorer = {'First_Name':topscor[0][0], 'Second_Name' : topscor[0][1], 'GoalsScored':topscor[0][2]}
+    topassist = {'First_Name':topassist[0][0], 'Second_Name' : topassist[0][1], 'GoalsAssisted':topassist[0][2]}
+    seasontopgoalscorer = {'First_Name':seastopscor[0][0], 'Second_Name' : seastopscor[0][1], 'GoalsScored':seastopscor[0][2]}
+    seasontopassist = {'First_Name':seastopassist[0][0], 'Second_Name' : seastopassist[0][1], 'GoalsAssisted':seastopassist[0][2]}
+    
+    return render_template('mgmt.html', allyellow = AllYellow[0][0],allred = AllRed[0][0] ,allgoals=Allgoals[0][0], allgames=AllGames[0][0], topgoalscorer=topgoalscorer, topassist=topassist, seasontopgoalscorer=seasontopgoalscorer, seasontopassist=seasontopassist, recentgame = RecMatch, type=session['type'])
 
 @app.route("/player")
 def match():
