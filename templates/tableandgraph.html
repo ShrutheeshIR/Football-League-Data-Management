@@ -73,7 +73,7 @@
           {% for ind,val in alltimetable %}
           <tr>
             <th scope="row">{{ind+1}}</th>
-            <td>{{val[0] + ' ' + val[1]}}</td>
+            <td>{{val[0] | string + ' ' + val[1] | string}}</td>
             <td>{{val[2]}}</td>
           </tr>
           {% endfor %}
@@ -92,7 +92,7 @@
           {% for ind,val in seastable %}
           <tr>
             <th scope="row">{{ind+1}}</th>
-            <td>{{val[0] + ' ' + val[1]}}</td>
+            <td>{{val[0]|string + ' ' + val[1]|string}}</td>
             <td>{{val[2]}}</td>
           </tr>
           {% endfor %}
@@ -102,9 +102,16 @@
 
       <div class="btn-group">
         <a href="{{url_for('hello',team=team, val=val, x1=0)}}" class="btn btn-primary active">
-            <i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Save
+            <i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Graph
         </a>
     </div>
+    {% if typ == 'm' or typ == 't' %}
+    <div class="btn-group">
+      <a href="{{url_for('hello',team=team, val=val, x1=2)}}" class="btn btn-primary active">
+          <i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i> Predict
+      </a>
+  </div>
+  {% endif %}
     {{x1}}
 
   </div>
@@ -121,6 +128,21 @@
     
   </div>
   {%endif%}
+
+  {% if x1=='2' %}
+  <div class="col-md-5" style=" height:100%">
+      
+    <div id="chart1" class="chart1" style=" height:50%">
+    </div>
+    
+    <div id="chart2" class="chart2" style=" height:50%">
+    </div>
+
+    <p>yh8iy73guykw4hryk4rk</p>
+    
+  </div>
+  {%endif%}
+
 </div>
 
 

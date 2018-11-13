@@ -40,7 +40,7 @@ def predattweek(tid):
     z = np.polyfit(x, y, 3)
     f = np.poly1d(z)
 
-    x_new = np.linspace(0, 50, 50)
+    x_new = np.linspace(0, 20, 50)
     y_new = f(x_new)
 
     trace1 = go.Scatter(

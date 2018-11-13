@@ -193,12 +193,12 @@
                       Search
                     </button>
                     <div class="dropdown-menu dark">
-														<a class="dropdown-item" href="{{url_for('hello',val='ts', x1=1)}}">Top Scorer</a>
-														<a class="dropdown-item" href="{{url_for('hello',val='a',  x1=1)}}">Assist</a>
-														<a class="dropdown-item" href="{{url_for('hello',val='rc', x1=1)}}">Red Card</a>
-														<a class="dropdown-item" href="{{url_for('hello',val='yc', x1=1)}}">Yellow Card</a>
-														{% if type == 'M' %}
-														<a class="dropdown-item" href="{{url_for('hello',val='m',  x1=1)}}">Matches</a>
+														<a class="dropdown-item" href="{{url_for('hello',val='ts', x1=1, typ=type)}}">Top Scorer</a>
+														<a class="dropdown-item" href="{{url_for('hello',val='a',  x1=1, typ=type)}}">Assist</a>
+														<a class="dropdown-item" href="{{url_for('hello',val='rc', x1=1, typ=type)}}">Red Card</a>
+														<a class="dropdown-item" href="{{url_for('hello',val='yc', x1=1, typ=type)}}">Yellow Card</a>
+														{% if type == 'm' %}
+														<a class="dropdown-item" href="{{url_for('hello',val='at',  x1=1, typ=type)}}">Attendance</a>
 														{% endif %}
                     </div>
                   </div>

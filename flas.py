@@ -3,6 +3,7 @@ import mysql.connector
 # response = google_images_download.googleimagesdownload()
 
 from flask import Flask, request, render_template,url_for,redirect
+from predictions import predAttendance,predAttendanceWeek,predGoalPlayer,predGoalTeam,predGoalTeamWeek,predPoints,predYellow,predYellowCardWeek,predRedCard
 
 #from graphs import graphAttendance,graphAttendanceWeek,graphGoalPlayer,graphGoalTeam,graphGoalTeamWeek,graphPoints,graphRedCard,graphYellowCard,graphYellowCardWeek
 import json
@@ -43,6 +44,8 @@ def login():
             try:
                 session['tid'] = myresult[0][0]
                 session['type'] = myresult[0][1]
+                print('***********************')
+                print(session)
             except:
                 print('uhyi76ygkyb')
                 error = 'Invalid Credentials. Please try again.'
@@ -59,6 +62,7 @@ def hello():
   y = request.args.get('val')
   z = request.args.get('x1')
 
+    
   if(y=='ts'):
     query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.P  order by count(goal.GID) desc;"
     print(query)
@@ -69,8 +73,16 @@ def hello():
     mycursor.execute(query)
     seastable = mycursor.fetchall()[:5]
     seastable = enumerate(seastable)
+    print('---------------'+session['type'] + '-----------')
+
+    # graphJSON=predGoalTeam.goalteam(session['tid'])
+    # graphJSON1=predGoalTeamWeek.goalteamweek(session['tid'])
     graphJSON=graphGoalTeam.graphgoalteam(session['tid'])
     graphJSON1=graphGoalTeamWeek.graphgoalteamweek(session['tid'])
+    print("QQQQQQQQQQQQQQQQQQQQQQQQq"+z)
+    if z=='2':      
+      graphJSON=predGoalTeam.goalteam(session['tid'])      
+      graphJSON1=predGoalTeamWeek.goalteamweek(session['tid'])
     
   if(y=='a'):
     query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
@@ -96,6 +108,9 @@ def hello():
     seastable = enumerate(seastable)
     graphJSON=graphYellowCard.graphyellowcard(session['tid'])
     graphJSON1=graphYellowCardWeek.graphyellowcardweek(session['tid'])
+    if z=='2':      
+      graphJSON=predYellow.predyellowcard(session['tid'])
+      graphJSON1=predYellowCardWeek.predyellowcardweek(session['tid'])
   if(y=='rc'):
     query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
     print(query)
@@ -108,12 +123,29 @@ def hello():
     seastable = enumerate(seastable)
     graphJSON=graphRedCard.graphredcard(session['tid'])
     graphJSON1=None
-    return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, seastable = seastable,graphJSON=graphJSON)
+    if z=='2':      
+      graphJSON=predRedCard.predredcard(session['tid'])      
+      
+    return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, typ=session['type'], seastable = seastable,graphJSON=graphJSON)
     
     
+  if(y=='at'):
+    query="select substring(season,1,4),substring(season,5,7),avg(attendance) from matches where  ht="+str(session['tid'])+" group by season order by season desc ;"
+    print(query)
+    mycursor.execute(query)
+    alltimetable = mycursor.fetchall()[:5]
+    alltimetable = enumerate(alltimetable)
+    query="select concat(t1.shortname,' vs'),t2.shortname,attendance from matches,teams as t1,teams as t2 where t1.tid=ht and t2.tid=at and season='2017/18' and ht="+str(session['tid'])+";"
+    mycursor.execute(query)
+    seastable = mycursor.fetchall()[:5]
+    seastable = enumerate(seastable)
+    graphJSON=graphAttendance.graphatt(session['tid'])
+    graphJSON1=graphAttendanceWeek.graphattweek(session['tid'])
+    if z=='2':      
+      graphJSON=predAttendance.predatt(session['tid'])
+      graphJSON1=predAttendanceWeek.predattweek(session['tid'])
 
-
-  return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, seastable = seastable,graphJSON=graphJSON,graphJSON1=graphJSON1)
+  return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable,typ=session['type'], seastable = seastable,graphJSON=graphJSON,graphJSON1=graphJSON1)
 
 @app.route("/fan", methods=["GET","POST"])
 def home():
