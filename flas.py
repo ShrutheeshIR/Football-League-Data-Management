@@ -1,4 +1,6 @@
 import mysql.connector
+import classes
+import attrclass
 # from google_images_download import google_images_download
 # response = google_images_download.googleimagesdownload()
 
@@ -10,6 +12,7 @@ import json
 import pymongo
 #from predictions import predGoalPlayer
 
+obj = attrclass.attr()
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["footballleague"]
@@ -94,6 +97,7 @@ def report():
 def hello():
   y = request.args.get('val')
   z = request.args.get('x1')
+  playersFromDB = list()
 
   if(session['type']=='m'):
 
@@ -102,6 +106,9 @@ def hello():
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(alltimetable[somei][0]+alltimetable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       alltimetable = enumerate(alltimetable)
       query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID group by goal.P  order by count(goal.GID) desc;"
       mycursor.execute(query)
@@ -119,26 +126,34 @@ def hello():
         graphJSON1=predGoalTeamWeek.goalteamweek()
       
     if(y=='a'):
-      query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
+      query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID group by goal.AP  order by count(goal.GID) desc;"
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(alltimetable[somei][0]+alltimetable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       alltimetable = enumerate(alltimetable)
-      query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
+      query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID group by goal.AP  order by count(goal.GID) desc;"
       mycursor.execute(query)
       seastable = mycursor.fetchall()[:5]
       seastable = enumerate(seastable)
       graphJSON=None
       graphJSON1=None
     if(y=='yc'):
-      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      ycardevent = classes.eventyc(obj.player,obj.time1,obj.ref)
+      ycardevent.getplayer()
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(alltimetable[somei][0]+alltimetable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       alltimetable = enumerate(alltimetable)
-      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and matches.season='2017/18' and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
       mycursor.execute(query)
       seastable = mycursor.fetchall()[:5]
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(seastable[somei][0]+seastable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       seastable = enumerate(seastable)
       graphJSON=graphYellowCard.graphyellowcard()
       graphJSON1=graphYellowCardWeek.graphyellowcardweek()
@@ -146,14 +161,19 @@ def hello():
         graphJSON=predYellow.predyellowcard()
         graphJSON1=predYellowCardWeek.predyellowcardweek()
     if(y=='rc'):
-      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      rcard = classes.eventrc(obj.player,obj.time1,obj.ref)
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(alltimetable[somei][0]+alltimetable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       alltimetable = enumerate(alltimetable)
-      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and matches.season='2017/18' and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
       mycursor.execute(query)
       seastable = mycursor.fetchall()[:5]
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(seastable[somei][0]+seastable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       seastable = enumerate(seastable)
       graphJSON=graphRedCard.graphredcard()
       graphJSON1=None
@@ -168,12 +188,13 @@ def hello():
       
       
     if(y=='at'):
-      query="select substring(season,1,4),substring(season,5,7),avg(attendance) from matches where  ht="+str(session['tid'])+" group by season order by season desc ;"
+      query="select substring(season,1,4),substring(season,5,7),avg(attendance) from matches group by season order by season desc ;"
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      matchplayed=classes.match(obj.ht,obj.at,obj.ref,alltimetable[0][2])
       alltimetable = enumerate(alltimetable)
-      query="select concat(t1.shortname,' vs'),t2.shortname,attendance from matches,teams as t1,teams as t2 where t1.tid=ht and t2.tid=at and season='2017/18' and ht="+str(session['tid'])+";"
+      query="select concat(t1.shortname,' vs'),t2.shortname,attendance from matches,teams as t1,teams as t2 where t1.tid=ht and t2.tid=at and season='2017/18';"
       mycursor.execute(query)
       seastable = mycursor.fetchall()[:5]
       seastable = enumerate(seastable)
@@ -189,6 +210,8 @@ def hello():
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(alltimetable[somei][0]+alltimetable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       alltimetable = enumerate(alltimetable)
       query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.P  order by count(goal.GID) desc;"
       mycursor.execute(query)
@@ -210,6 +233,8 @@ def hello():
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(alltimetable[somei][0]+alltimetable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       alltimetable = enumerate(alltimetable)
       query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
       mycursor.execute(query)
@@ -222,6 +247,10 @@ def hello():
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      ycardevent = classes.eventyc(obj.player,obj.time1,obj.ref)
+      ycardevent.getdetails()
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(alltimetable[somei][0]+alltimetable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       alltimetable = enumerate(alltimetable)
       query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
       mycursor.execute(query)
@@ -237,6 +266,10 @@ def hello():
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      rcard = classes.eventrc(obj.player,obj.time1,obj.ref)
+      rcard.getdetails()
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(alltimetable[somei][0]+alltimetable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       alltimetable = enumerate(alltimetable)
       query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
       mycursor.execute(query)
@@ -259,6 +292,10 @@ def hello():
       print(query)
       mycursor.execute(query)
       alltimetable = mycursor.fetchall()[:5]
+      matchplayed=classes.match(obj.ht,obj.at,obj.ref,alltimetable[0][2])
+      matchplayed.getdetails()
+      for somei in range(0,5):
+        playersFromDB.append( classes.player(alltimetable[somei][0]+alltimetable[somei][1],obj.getdob(),obj.getpos,obj.tid))
       alltimetable = enumerate(alltimetable)
       query="select concat(t1.shortname,' vs'),t2.shortname,attendance from matches,teams as t1,teams as t2 where t1.tid=ht and t2.tid=at and season='2017/18' and ht="+str(session['tid'])+";"
       mycursor.execute(query)
@@ -291,7 +328,7 @@ def home():
     
     player={}
     print('h73i632yb')
-    query = "select player.pid, player.FN, player.LN, player.Coun, player.DOB, player.Pos from player where CONCAT(player.FN, ' ',player.LN) like '%" + playername + "%'"
+    query = "select player.pid, player.FN, player.LN, player.Coun, player.DOB, player.Pos from player where CONCAT(player.FN, ' ',player.LN) like '%" + playername + "%' limit 5"
     print(query)
     mycursor.execute(query)
     playdet = mycursor.fetchall()[:5]
@@ -315,6 +352,8 @@ def home():
     
     return render_template("player.html", player=player)
 
+
+  print("aaaaaaaaaaaaaaaa")
   if session['type'] != 'm':
     x = session['tid']
     #mycursor.execute("SELECT count(Goal_ID) from goal_table where Player_ID=2064 and type != 'O'")
@@ -333,32 +372,41 @@ def home():
     #print(absolute_image_paths)
     query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID="+ str(x) + " group by goal.P  order by count(goal.GID) desc;"
     mycursor.execute(query)
+    print("---------------1111")
     topscor = mycursor.fetchall()
     query="select distinct player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(x) + " group by goal.P  order by count(goal.GID) desc;"
     print(query)
     mycursor.execute(query)
+    print("---------------2222")
     seastopscor = mycursor.fetchall()
     query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(x) + " group by goal.AP  order by count(goal.GID) desc;"
     mycursor.execute(query)
+    print("---------------3333")
     topassist = mycursor.fetchall()
     query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(x) + " group by goal.AP  order by count(goal.GID) desc;"
     mycursor.execute(query)
+    print("---------------4444")
     seastopassist = mycursor.fetchall()
     query="select count(*) from goal where goal.TID="+str(x)+" and goal.Type!='O'"
     mycursor.execute(query)
+    print("---------------5555")
     Allgoals = mycursor.fetchall()
     print(Allgoals)  
     query="select count(*) from matches where matches.HT="+str(x)+" or matches.AT="+str(x)
     mycursor.execute(query)
+    print("---------------6666")
     AllGames = mycursor.fetchall()
     query="select count(*) from event where event.Type='Y' and event.TID="+str(x)
     mycursor.execute(query)
+    print("---------------7777")
     AllYellow = mycursor.fetchall()
     query="select count(*) from event where event.Type='R' and event.TID="+str(x)
     mycursor.execute(query)
+    print("---------------8888")
     AllRed = mycursor.fetchall()
     query="select HT, AT, HG, AG from matches,teams where (matches.HT=teams.TID or matches.AT=teams.TID) and teams.TID="+str(x) + " order by matches.Date desc,matches.Time desc limit 3;"
     mycursor.execute(query)
+    print("---------------9999")
     RecentMatches = mycursor.fetchall()
     RecMatch = []
     for i in RecentMatches:
@@ -408,28 +456,33 @@ def home():
     print(x)
     return render_template('index.html', x=x, allyellow = AllYellow[0][0],allred = AllRed[0][0] ,allgoals=Allgoals[0][0], allgames=AllGames[0][0], teamname=teamname, teamshortname=teamshortname, topgoalscorer=topgoalscorer, topassist=topassist, seasontopgoalscorer=seasontopgoalscorer, seasontopassist=seasontopassist, recentgame = RecMatch, type=session['type'])
 
-
+  
   else:
     #mycursor.execute("SELECT count(Goal_ID) from goal_table where Player_ID=2064 and type != 'O'")
     #myresult1 = mycursor.fetchall()
     #mycursor.execute("select player_table.First_Name,player_table.Last_Name,count(goal_table.Goal_ID) from team_table,match_table,player_table,goal_table where player_table.Player_ID=goal_table.Player_ID and match_table.Match_ID=goal_table.Match_ID and goal_table.Team_ID=team_table.Team_ID and team_table.Short_Name='Man Utd' group by goal_table.Player_ID  order by count(goal_table.Goal_ID) desc;")
     #myresult1 = mycursor.fetchall()
-
+    print("ttttttttttt")
     query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID  group by goal.P  order by count(goal.GID) desc;"
     mycursor.execute(query)
+    print("---------------1111")
     topscor = mycursor.fetchall()
     query="select distinct player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID group by goal.P  order by count(goal.GID) desc;"
     print(query)
     mycursor.execute(query)
+    print("---------------2222")
     seastopscor = mycursor.fetchall()
     query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID group by goal.AP  order by count(goal.GID) desc;"
     mycursor.execute(query)
+    print("---------------3333")
     topassist = mycursor.fetchall()
     query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID group by goal.AP  order by count(goal.GID) desc;"
     mycursor.execute(query)
+    print("---------------4444")
     seastopassist = mycursor.fetchall()
     query="select count(*) from goal where goal.Type!='O'"
     mycursor.execute(query)
+    print("---------------5555")
     Allgoals = mycursor.fetchall()
     print(Allgoals)  
     query="select count(*) from matches"
