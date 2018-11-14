@@ -20,12 +20,21 @@
  
     <div class="header">
         <h2>
-            Plotly Chart Demo
+            Report
         </h2>
     </div>
- 
-    <div id="chart" class="chart">
+    
+    {% for i,x in graph %}
+    {{heads[i]}}
+    <div id="chart{{i}}" class="chart">
     </div>
+    {% endfor %}
+
+    
+   
+
+
+    
  
 </body>
  
@@ -35,12 +44,15 @@
     <!-- Plotly.js -->
     <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
  
+    {% for i,x in grap %}
+    
     <script type="text/javascript">
          
-        var graphs = {{graphJSON | safe}};
+        var graphs = {{x | safe}};
         
-        Plotly.plot('chart',graphs,{});        
+        Plotly.plot('chart{{i}}',graphs,{});        
  
     </script>
+    {% endfor %}
  
 </html>

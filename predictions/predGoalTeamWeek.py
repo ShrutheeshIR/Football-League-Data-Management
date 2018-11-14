@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-def goalteamweek(tid):
+def goalteamweek(tid=None):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -18,7 +18,10 @@ def goalteamweek(tid):
 
     mycursor = mydb.cursor()
 
-    mycursor.execute("select MID,matches.AG from matches,teams where matches.season='2017/18' and matches.at=teams.TID and teams.tid="+str(tid)+" union select mid,matches.HG from matches,teams where matches.season='2017/18' and matches.ht=teams.TID and teams.ShortName='Chelsea' order by mid asc;")
+    if tid==None:
+        mycursor.execute("select MID,matches.AG from matches,teams where matches.season='2017/18' and matches.at=teams.TID union select mid,matches.HG from matches,teams where matches.season='2017/18' and matches.ht=teams.TID  order by mid asc;")
+    else:
+        mycursor.execute("select MID,matches.AG from matches,teams where matches.season='2017/18' and matches.at=teams.TID and teams.tid="+str(tid)+" union select mid,matches.HG from matches,teams where matches.season='2017/18' and matches.ht=teams.TID and teams.tid="+str(tid)+" order by mid asc;")
 
     myresult = mycursor.fetchall()
     # print(myresult)

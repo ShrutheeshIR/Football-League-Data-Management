@@ -216,16 +216,9 @@
                      </form>
 
 
-                     <form id="form_search" name="match_search" method="post" action="" class="form-inline">
-                            <div class="form-group">
-                              <div class="input-group">
-                               <input class="form-control" placeholder="Enter Match" type="text" name="Match">
-                               <span class="input-group-btn">
-                                  <button class="btn btn-default" type="button">Go!</button>
-                               </span>
-                             </div>
-                           </div>
-                         </form>                     
+					 <form action="{{url_for('report')}}" method="get">
+						 <button type="submit" class="btn btn-success">Report</button>                    
+						 </form>
                 </div>
        </div>
 	<div class="stats" id="stats">

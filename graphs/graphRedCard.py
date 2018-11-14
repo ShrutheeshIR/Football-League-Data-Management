@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-def graphredcard(tid):
+def graphredcard(tid=None):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -18,7 +18,10 @@ def graphredcard(tid):
 
     mycursor = mydb.cursor()
 
-    mycursor.execute("select count(eid),matches.season from event,matches where event.`Type`='R' and event.tid="+str(tid)+" and event.mid=matches.mid group by matches.season ;")
+    if tid==None:
+        mycursor.execute("select count(eid),matches.season from event,matches where event.`Type`='R' and event.mid=matches.mid group by matches.season ;")
+    else:
+        mycursor.execute("select count(eid),matches.season from event,matches where event.`Type`='R' and event.tid="+str(tid)+" and event.mid=matches.mid group by matches.season ;")
 
     myresult = mycursor.fetchall()
     # print(myresult)

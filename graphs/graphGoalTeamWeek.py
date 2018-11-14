@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-def graphgoalteamweek(tid):
+def graphgoalteamweek(tid=None):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -18,14 +18,17 @@ def graphgoalteamweek(tid):
 
     mycursor = mydb.cursor()
 
-    mycursor.execute("select MID,matches.AG from matches,teams where matches.season='2017/18' and matches.at=teams.TID and teams.ShortName='Chelsea' union select mid,matches.HG from matches,teams where matches.season='2017/18' and matches.ht=teams.TID and teams.tid="+str(tid)+" order by mid asc;")
+    if tid==None:
+        mycursor.execute("select MID,sum(matches.AG) from matches,teams where matches.season='2017/18' and matches.at=teams.TID group by matches.date union select mid,sum(matches.HG) from matches,teams where matches.season='2017/18' and matches.ht=teams.TID group by matches.date order by mid asc;")
+    else:
+        mycursor.execute("select MID,matches.AG from matches,teams where matches.season='2017/18' and matches.at=teams.TID and teams.tid="+str(tid)+" union select mid,matches.HG from matches,teams where matches.season='2017/18' and matches.ht=teams.TID and teams.tid="+str(tid)+" order by mid asc;")
 
     myresult = mycursor.fetchall()
     # print(myresult)
     x1 = list()
     ctr=0
     for x in myresult:
-        x1.append((ctr,x[1]))
+        x1.append((ctr,int(x[1])))
         ctr=ctr+1
 
     # print(x1)
@@ -35,7 +38,20 @@ def graphgoalteamweek(tid):
 
     x = points[:,0]
     y = points[:,1]
-
+    # ctr=0
+    # for ii in y:
+    #     y[ctr]=float(y[ctr])
+    #     print(type(y[ctr]))
+    #     ctr+=1
+    # ctr=0
+    # for ii in x:
+    #     x[ctr]=float(x[ctr])
+    #     print(type(x[ctr]))
+    #     ctr+=1
+    print(type(x[0]))
+    print(type(y[0]))
+    print(type(x))
+    print(type(y))
     z = np.polyfit(x, y, 3)
     f = np.poly1d(z)
 

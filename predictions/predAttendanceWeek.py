@@ -10,7 +10,7 @@ import scipy
 
 
 
-def predattweek(tid):
+def predattweek(tid=None):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -19,7 +19,10 @@ def predattweek(tid):
     )    
     mycursor = mydb.cursor()
 
-    mycursor.execute("select matches.mid, matches.Attendance from matches,teams where matches.season='2017/18' and matches.HT=teams.TID and teams.tid="+str(tid)+";")
+    if tid==None:
+        mycursor.execute("select matches.mid, matches.Attendance from matches,teams where matches.season='2017/18' and matches.HT=teams.TID ;")
+    else:
+        mycursor.execute("select matches.mid, matches.Attendance from matches,teams where matches.season='2017/18' and matches.HT=teams.TID and teams.tid="+str(tid)+";")
 
     myresult = mycursor.fetchall()
     # print(myresult)

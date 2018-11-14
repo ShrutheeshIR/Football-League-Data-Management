@@ -5,17 +5,21 @@ import mysql.connector
 from flask import Flask, request, render_template,url_for,redirect
 from predictions import predAttendance,predAttendanceWeek,predGoalPlayer,predGoalTeam,predGoalTeamWeek,predPoints,predYellow,predYellowCardWeek,predRedCard
 
-#from graphs import graphAttendance,graphAttendanceWeek,graphGoalPlayer,graphGoalTeam,graphGoalTeamWeek,graphPoints,graphRedCard,graphYellowCard,graphYellowCardWeek
+from graphs import graphAttendance,graphAttendanceWeek,graphGoalPlayer,graphGoalTeam,graphGoalTeamWeek,graphPoints,graphRedCard,graphYellowCard,graphYellowCardWeek
 import json
+import pymongo
 #from predictions import predGoalPlayer
 
 
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+mydb = myclient["footballleague"]
+mycol = mydb["userreport"]
 
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Fkafka",
-  database="footballproject"
+  passwd="battlefield4",
+  database="footballmanagement"
 )
 print(mydb)
 mycursor = mydb.cursor()
@@ -55,96 +59,223 @@ def login():
     return render_template('login.html', error=error)
 
 
- 
+@app.route("/report")
+def report():
+  myquery = { "username": session['username'] }
+
+  mydoc = mycol.find(myquery)
+  ctr=0
+  graphs1=list()
+  heads=list()
+  for x in mydoc:
+    ctr+=1
+    print(type(x))
+    print(x)
+    graphs1.append(json.loads(x['report1']))
+    heads.append(x['heading1'])
+    print(type(x['report1']))
+    try:
+      graphs1.append(json.loads(x['report2']))
+      heads.append(x['heading2'])
+    except:
+      continue
+  print(graphs1)
+  # print("***************************************")
+  # print(type(graphs1[0][0]['x'][0]))
+
+  print('----------------------------'+str(type(graphs1[0][0])))
+  graphs=enumerate(graphs1)
+  grap = enumerate(graphs1)
+  # heads=enumerate(heads)    
+
+  return render_template('chart.html',graph=graphs,grap=grap,heads=heads)
 
 @app.route("/fand2")
 def hello():
   y = request.args.get('val')
   z = request.args.get('x1')
 
-    
-  if(y=='ts'):
-    query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.P  order by count(goal.GID) desc;"
-    print(query)
-    mycursor.execute(query)
-    alltimetable = mycursor.fetchall()[:5]
-    alltimetable = enumerate(alltimetable)
-    query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.P  order by count(goal.GID) desc;"
-    mycursor.execute(query)
-    seastable = mycursor.fetchall()[:5]
-    seastable = enumerate(seastable)
-    print('---------------'+session['type'] + '-----------')
+  if(session['type']=='m'):
 
-    # graphJSON=predGoalTeam.goalteam(session['tid'])
-    # graphJSON1=predGoalTeamWeek.goalteamweek(session['tid'])
-    graphJSON=graphGoalTeam.graphgoalteam(session['tid'])
-    graphJSON1=graphGoalTeamWeek.graphgoalteamweek(session['tid'])
-    print("QQQQQQQQQQQQQQQQQQQQQQQQq"+z)
-    if z=='2':      
-      graphJSON=predGoalTeam.goalteam(session['tid'])      
-      graphJSON1=predGoalTeamWeek.goalteamweek(session['tid'])
-    
-  if(y=='a'):
-    query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
-    print(query)
-    mycursor.execute(query)
-    alltimetable = mycursor.fetchall()[:5]
-    alltimetable = enumerate(alltimetable)
-    query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
-    mycursor.execute(query)
-    seastable = mycursor.fetchall()[:5]
-    seastable = enumerate(seastable)
-    graphJSON=None
-    graphJSON1=None
-  if(y=='yc'):
-    query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
-    print(query)
-    mycursor.execute(query)
-    alltimetable = mycursor.fetchall()[:5]
-    alltimetable = enumerate(alltimetable)
-    query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
-    mycursor.execute(query)
-    seastable = mycursor.fetchall()[:5]
-    seastable = enumerate(seastable)
-    graphJSON=graphYellowCard.graphyellowcard(session['tid'])
-    graphJSON1=graphYellowCardWeek.graphyellowcardweek(session['tid'])
-    if z=='2':      
-      graphJSON=predYellow.predyellowcard(session['tid'])
-      graphJSON1=predYellowCardWeek.predyellowcardweek(session['tid'])
-  if(y=='rc'):
-    query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
-    print(query)
-    mycursor.execute(query)
-    alltimetable = mycursor.fetchall()[:5]
-    alltimetable = enumerate(alltimetable)
-    query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
-    mycursor.execute(query)
-    seastable = mycursor.fetchall()[:5]
-    seastable = enumerate(seastable)
-    graphJSON=graphRedCard.graphredcard(session['tid'])
-    graphJSON1=None
-    if z=='2':      
-      graphJSON=predRedCard.predredcard(session['tid'])      
+    if(y=='ts'):    
+      query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID  group by goal.P  order by count(goal.GID) desc;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID group by goal.P  order by count(goal.GID) desc;"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      print('---------------'+session['type'] + '-----------')
+
+      # graphJSON=predGoalTeam.goalteam(session['tid'])
+      # graphJSON1=predGoalTeamWeek.goalteamweek(session['tid'])
+      graphJSON=graphGoalTeam.graphgoalteam()
+      graphJSON1=graphGoalTeamWeek.graphgoalteamweek()
+      print("QQQQQQQQQQQQQQQQQQQQQQQQq"+z)
+      if z=='2':      
+        graphJSON=predGoalTeam.goalteam()      
+        graphJSON1=predGoalTeamWeek.goalteamweek()
       
-    return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, typ=session['type'], seastable = seastable,graphJSON=graphJSON)
-    
-    
-  if(y=='at'):
-    query="select substring(season,1,4),substring(season,5,7),avg(attendance) from matches where  ht="+str(session['tid'])+" group by season order by season desc ;"
-    print(query)
-    mycursor.execute(query)
-    alltimetable = mycursor.fetchall()[:5]
-    alltimetable = enumerate(alltimetable)
-    query="select concat(t1.shortname,' vs'),t2.shortname,attendance from matches,teams as t1,teams as t2 where t1.tid=ht and t2.tid=at and season='2017/18' and ht="+str(session['tid'])+";"
-    mycursor.execute(query)
-    seastable = mycursor.fetchall()[:5]
-    seastable = enumerate(seastable)
-    graphJSON=graphAttendance.graphatt(session['tid'])
-    graphJSON1=graphAttendanceWeek.graphattweek(session['tid'])
-    if z=='2':      
-      graphJSON=predAttendance.predatt(session['tid'])
-      graphJSON1=predAttendanceWeek.predattweek(session['tid'])
+    if(y=='a'):
+      query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      graphJSON=None
+      graphJSON1=None
+    if(y=='yc'):
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      graphJSON=graphYellowCard.graphyellowcard()
+      graphJSON1=graphYellowCardWeek.graphyellowcardweek()
+      if z=='2':      
+        graphJSON=predYellow.predyellowcard()
+        graphJSON1=predYellowCardWeek.predyellowcardweek()
+    if(y=='rc'):
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      graphJSON=graphRedCard.graphredcard()
+      graphJSON1=None
+      if z=='2':      
+        graphJSON=predRedCard.predredcard()  
 
+      if graphJSON != None  and (z=='0' or z=='2'):
+        mydict = { "username": session['username'], "report1": graphJSON,"heading1":'head1' }
+        x = mycol.insert_one(mydict)    
+        
+      return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, typ=session['type'], seastable = seastable,graphJSON=graphJSON)
+      
+      
+    if(y=='at'):
+      query="select substring(season,1,4),substring(season,5,7),avg(attendance) from matches where  ht="+str(session['tid'])+" group by season order by season desc ;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query="select concat(t1.shortname,' vs'),t2.shortname,attendance from matches,teams as t1,teams as t2 where t1.tid=ht and t2.tid=at and season='2017/18' and ht="+str(session['tid'])+";"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      graphJSON=graphAttendance.graphatt()
+      graphJSON1=graphAttendanceWeek.graphattweek()
+      if z=='2':      
+        graphJSON=predAttendance.predatt()
+        graphJSON1=predAttendanceWeek.predattweek()
+
+  else:
+    if(y=='ts'):    
+      query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.P  order by count(goal.GID) desc;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query = "select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.P and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.P  order by count(goal.GID) desc;"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      print('---------------'+session['type'] + '-----------')
+
+      # graphJSON=predGoalTeam.goalteam(session['tid'])
+      # graphJSON1=predGoalTeamWeek.goalteamweek(session['tid'])
+      graphJSON=graphGoalTeam.graphgoalteam(session['tid'])
+      graphJSON1=graphGoalTeamWeek.graphgoalteamweek(session['tid'])
+      print("QQQQQQQQQQQQQQQQQQQQQQQQq"+z)
+      if z=='2':      
+        graphJSON=predGoalTeam.goalteam(session['tid'])      
+        graphJSON1=predGoalTeamWeek.goalteamweek(session['tid'])
+      
+    if(y=='a'):
+      query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and goal.TID=teams.TID and teams.TID=" + str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query="select player.FN,player.LN,count(goal.GID) from teams,matches,player,goal where player.PID=goal.AP and matches.MID=goal.MID and matches.season='2017/18' and goal.TID=teams.TID and teams.TID="+ str(session['tid']) + " group by goal.AP  order by count(goal.GID) desc;"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      graphJSON=None
+      graphJSON1=None
+    if(y=='yc'):
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='Y' group by event.P  order by count(event.EID) desc;"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      graphJSON=graphYellowCard.graphyellowcard(session['tid'])
+      graphJSON1=graphYellowCardWeek.graphyellowcardweek(session['tid'])
+      if z=='2':      
+        graphJSON=predYellow.predyellowcard(session['tid'])
+        graphJSON1=predYellowCardWeek.predyellowcardweek(session['tid'])
+    if(y=='rc'):
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query="select player.FN,player.LN,count(event.EID) from teams,matches,player,event where player.PID=event.P and matches.MID=event.MID and event.TID=teams.TID and teams.TID="+ str(session['tid']) + " and matches.season='2017/18' and event.`Type`='R' group by event.P  order by count(event.EID) desc;"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      graphJSON=graphRedCard.graphredcard(session['tid'])
+      graphJSON1=None
+      if z=='2':      
+        graphJSON=predRedCard.predredcard(session['tid'])      
+
+      if graphJSON != None  and (z=='0' or z=='2'):
+        mydict = { "username": session['username'], "report1": graphJSON,"heading1":'head1' }
+        x = mycol.insert_one(mydict)
+        
+      return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable, typ=session['type'], seastable = seastable,graphJSON=graphJSON)
+    
+    
+    if(y=='at'):
+      query="select substring(season,1,4),substring(season,5,7),avg(attendance) from matches where  ht="+str(session['tid'])+" group by season order by season desc ;"
+      print(query)
+      mycursor.execute(query)
+      alltimetable = mycursor.fetchall()[:5]
+      alltimetable = enumerate(alltimetable)
+      query="select concat(t1.shortname,' vs'),t2.shortname,attendance from matches,teams as t1,teams as t2 where t1.tid=ht and t2.tid=at and season='2017/18' and ht="+str(session['tid'])+";"
+      mycursor.execute(query)
+      seastable = mycursor.fetchall()[:5]
+      seastable = enumerate(seastable)
+      graphJSON=graphAttendance.graphatt(session['tid'])
+      graphJSON1=graphAttendanceWeek.graphattweek(session['tid'])
+      if z=='2':      
+        graphJSON=predAttendance.predatt(session['tid'])
+        graphJSON1=predAttendanceWeek.predattweek(session['tid'])
+
+  if graphJSON != None and graphJSON1!=None and (z=='0' or z=='2'):
+    mydict = { "username": session['username'], "report1": graphJSON,"report2":graphJSON1,"heading1":'head1',"heading2":'head2' }
+    x = mycol.insert_one(mydict)
+  # print("********************")
+  # print(type(graphJSON[0]['x'][0]))
+  # print("********************")
   return render_template("tableandgraph.html", val=y, x1=z, alltimetable=alltimetable,typ=session['type'], seastable = seastable,graphJSON=graphJSON,graphJSON1=graphJSON1)
 
 @app.route("/fan", methods=["GET","POST"])

@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-def predatt(tid):
+def predatt(tid=None):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -20,7 +20,10 @@ def predatt(tid):
 
     mycursor = mydb.cursor()
 
-    mycursor.execute("select matches.season, avg(matches.Attendance) from matches,teams where matches.HT=teams.TID and teams.tid="+str(tid)+" group by matches.season;")
+    if tid==None:
+        mycursor.execute("select matches.season, avg(matches.Attendance) from matches,teams where matches.HT=teams.TID group by matches.season;")
+    else:
+        mycursor.execute("select matches.season, avg(matches.Attendance) from matches,teams where matches.HT=teams.TID and teams.tid="+str(tid)+" group by matches.season;")
 
     myresult = mycursor.fetchall()
     # print(myresult)

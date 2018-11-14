@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-def graphyellowcardweek(tid):
+def graphyellowcardweek(tid=None):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -18,7 +18,10 @@ def graphyellowcardweek(tid):
 
     mycursor = mydb.cursor()
 
-    mycursor.execute("select count(eid),matches.mid from event,matches where event.`Type`='Y' and event.tid="+str(tid)+" and event.mid=matches.mid and matches.season='2017/18' group by event.mid order by mid asc;")
+    if tid==None:
+        mycursor.execute("select count(eid),matches.mid from event,matches where event.`Type`='Y' and event.mid=matches.mid and matches.season='2017/18' group by event.mid order by mid asc;")
+    else:
+        mycursor.execute("select count(eid),matches.mid from event,matches where event.`Type`='Y' and event.tid="+str(tid)+" and event.mid=matches.mid and matches.season='2017/18' group by event.mid order by mid asc;")
 
     myresult = mycursor.fetchall()
     # print(myresult)
