@@ -7,7 +7,7 @@ import attrclass
 from flask import Flask, request, render_template,url_for,redirect
 from predictions import predAttendance,predAttendanceWeek,predGoalPlayer,predGoalTeam,predGoalTeamWeek,predPoints,predYellow,predYellowCardWeek,predRedCard
 
-from graphs import graphAttendance,graphAttendanceWeek,graphGoalPlayer,graphGoalTeam,graphGoalTeamWeek,graphPoints,graphRedCard,graphYellowCard,graphYellowCardWeek
+from graphs import bargraphgoal,graphAttendance,graphAttendanceWeek,graphGoalPlayer,graphGoalTeam,graphGoalTeamWeek,graphPoints,graphRedCard,graphYellowCard,graphYellowCardWeek
 import json
 import pymongo
 #from predictions import predGoalPlayer
@@ -65,31 +65,34 @@ def login():
 
 @app.route("/report")
 def report():
-  myquery = { "username": session['username'] }
+  try:
+    myquery = { "username": session['username'] }
 
-  mydoc = mycol.find(myquery)
-  ctr=0
-  graphs1=list()
-  heads=list()
-  for x in mydoc:
-    ctr+=1
-    print(type(x))
-    print(x)
-    graphs1.append(json.loads(x['report1']))
-    heads.append(x['heading1'])
-    print(type(x['report1']))
-    try:
-      graphs1.append(json.loads(x['report2']))
-      heads.append(x['heading2'])
-    except:
-      continue
-  print(graphs1)
-  # print("***************************************")
-  # print(type(graphs1[0][0]['x'][0]))
+    mydoc = mycol.find(myquery)
+    ctr=0
+    graphs1=list()
+    heads=list()
+    for x in mydoc:
+      ctr+=1
+      print(type(x))
+      print(x)
+      graphs1.append(json.loads(x['report1']))
+      heads.append(x['heading1'])
+      print(type(x['report1']))
+      try:
+        graphs1.append(json.loads(x['report2']))
+        heads.append(x['heading2'])
+      except:
+        continue
+    print(graphs1)
+    # print("***************************************")
+    # print(type(graphs1[0][0]['x'][0]))
 
-  print('----------------------------'+str(type(graphs1[0][0])))
-  graphs=enumerate(graphs1)
-  grap = enumerate(graphs1)
+    print('----------------------------'+str(type(graphs1[0][0])))
+    graphs=enumerate(graphs1)
+    grap = enumerate(graphs1)
+  except:
+    return render_template('nograph.html')
   # heads=enumerate(heads)    
 
   return render_template('chart.html',graph=graphs,grap=grap,heads=heads)
@@ -121,7 +124,8 @@ def hello():
 
       # graphJSON=predGoalTeam.goalteam(session['tid'])
       # graphJSON1=predGoalTeamWeek.goalteamweek(session['tid'])
-      graphJSON=graphGoalTeam.graphgoalteam()
+      # graphJSON=graphGoalTeam.graphgoalteam()
+      graphJSON=bargraphgoal.graphgoalteam()
       h1="Goals per season Vs Season Number"
       h2="Goals per gameweek Vs Season Number"
       graphJSON1=graphGoalTeamWeek.graphgoalteamweek()
@@ -231,7 +235,8 @@ def hello():
 
       # graphJSON=predGoalTeam.goalteam(session['tid'])
       # graphJSON1=predGoalTeamWeek.goalteamweek(session['tid'])
-      graphJSON=graphGoalTeam.graphgoalteam(session['tid'])
+      # graphJSON=graphGoalTeam.graphgoalteam(session['tid'])
+      graphJSON=bargraphgoal.graphgoalteam(session['tid'])
       graphJSON1=graphGoalTeamWeek.graphgoalteamweek(session['tid'])
       h1="Goals per season Vs Season Number"
       h2="Goals per gameweek Vs Season Number"
