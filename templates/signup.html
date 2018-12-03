@@ -1,0 +1,61 @@
+<html>
+  <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Sign Up</title>
+    
+  </head>
+  <body>
+    <form action="" method="post" style="border:1px solid #ccc">
+        <div class="container">
+          <h1>Sign Up</h1>
+          <p>Please fill in this form to create an account.</p>
+          <hr>
+      
+          <label for="email"><b>Username</b></label>
+          <input type="text" placeholder="Username" name="username" value="{{request.form.username }}" required>
+
+          <label for="psw"><b>Password</b></label>
+          <input type="password" placeholder="Enter Password" name="psw" value="{{request.form.psw }}" required>
+
+          <label for="acctype"><b>Account Type</b></label>
+          
+          <select name="acctype" value="{{request.form.acctype }}">
+                <option value="f">Fan</option>
+                <option value="t">Team</option>
+                <option value="m">Manager</option>
+              </select>
+
+              <label for="teamname"><b>Team Name</b></label>
+                <select name="teamname" value="{{request.form.teamname }}">
+                    <option value=1>Arsenal</option>
+                    <option value=4>Chelsea</option>
+                    <option value=6>Crystal Palace</option>
+                    <option value=7>Everton</option>
+                    <option value=10>Liverpool</option>
+                    <option value=12>Man Utd</option>
+                    <option value=11>Man City</option>
+                    <option value=21>Spurs</option>
+                    <option value=26>Leicester</option>
+                    
+                  </select>
+
+          
+          <!-- <input type="text" placeholder="Teamname" name="teamname" required> -->
+      
+          
+      
+          
+      
+          
+      
+          
+      
+          <div class="clearfix">
+
+            <button  class="signupbtn">Sign Up</button>
+          </div>
+        </div>
+      </form>
+    
+  </body>
+</html>
